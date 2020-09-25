@@ -19,28 +19,30 @@ public class JpaMain {
             team.setName("TeamA");
             em.persist(team);
 
-            Team team2 = new Team();
-            team.setName("TeamB");
-            em.persist(team2);
-
             Member member = new Member();
             member.setUsername("member1");
-            member.setTeam(team);
-
+//            member.changeTeam(team); //**
             em.persist(member);
 
-            em.flush();
-            em.clear();
-//            // 한 회원이 어느 팀에 소속되어 있나 조회하기 위해서는
-//            // 멤버의 TeamId를 조회해서 그 TeamId로 또 TEAM을 조회해야함.
-//            Member findMember = em.find(Member.class, member.getId());
-//            Long findTeamId = findMember.getTeamId();
-//            Team findTeam = em.find(Team.class, findTeamId);
-            Member findMember = em.find(Member.class, member.getId());
-            Team findTeam = findMember.getTeam();
-            System.out.println("findTeam = " + findTeam.getName());
+            team.addMember(member);
+
+//            team.getMembers().add(member); //**
+
+//            em.flush();
+//            em.clear();
+
+            // 1차 캐시에 있는 걸 가지고 오기 때문에,
+            // Team 객체의 members에는 아무 것도 들어 있지 않은 상태
+            // 실제 DB로 SELECT 날리지 않기 때문에,,
+            Team findTeam = em.find(Team.class, team.getId());
+            List<Member> members = findTeam.getMembers();
+
+            System.out.println("================");
+            // 무한루프에 빠지게 된다
+            System.out.println("members = " + findTeam);
+            System.out.println("================");
+
             // 커밋
-            findMember.setTeam(team2);
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
