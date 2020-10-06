@@ -12,11 +12,8 @@ public class Delivery extends BaseEntity {
     @OneToOne(mappedBy = "delivery", fetch = LAZY)
     private Order order;
 
-    private String city;
-
-    private String street;
-
-    private String zipcode;
+    @Embedded
+    private Address address;
 
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
